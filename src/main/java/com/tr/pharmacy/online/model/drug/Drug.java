@@ -9,12 +9,13 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
-@Table(name="drugs")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name="drugs")
 public class Drug extends BaseEntity {
 
     @Id
@@ -30,10 +31,11 @@ public class Drug extends BaseEntity {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
-    private int dosageForm;
+    @ManyToOne
+    @JoinColumn(name = "dosageForm_id", referencedColumnName = "id")
+    private DosageForm dosageForm;
 
-    private String usage;
+    private String drugUsage;
 
     @Column(nullable = false, precision = 12)
     private BigDecimal pricePerUnit;

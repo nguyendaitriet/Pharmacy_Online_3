@@ -5,6 +5,39 @@ class App {
     static BASE_URL_DOSAGE_FORM = this.DOMAIN + "/api/dosageForms";
     static BASE_URL_USER = this.DOMAIN + "/api/users";
     static BASE_URL_PROVINCE = "https://vapi.vnappmob.com/api/province";
+
+    static SUCCESS_CREATED = "Successful data generation!";
+    static SUCCESS_UPDATED = "Data update successful!";
+
+    static showSuspendedConfirmDialog() {
+        return Swal.fire({
+            icon: 'warning',
+            text: 'Are you sure to suspend the selected customer ?',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, please suspend this client !',
+            cancelButtonText: 'Cancel',
+        })
+    }
+
+    static showSuccessAlert(t) {
+        Swal.fire({
+            icon: 'success',
+            title: t,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+    static showErrorAlert(t) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Warning',
+            text: t,
+        })
+    }
 }
 
 class Drug {

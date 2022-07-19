@@ -4,13 +4,15 @@ public class ErrorMessage {
     public static final String DUPLICATE_EMAIL = "Email address exists.";
     public static final String DUPLICATE_PHONE = "Phone number exists.";
 
-    public static final String NOT_EMPTY = "must NOT be empty.";
-    public static final String NOT_NUMBER = "contains digits only.";
-
     public static final String VALID_DRUG_NAME = "Drug name contains letters and digits only.";
 
-    public static final String INVALID_PRODUCTION_DATE = "Invalid production date.";
-    public static final String INVALID_EXPIRATION_DATE = "Invalid expiration date.";
+    public static final String SERVER_ERROR = "Failed operation, please contact to the system manager.";
+
+    public static final String DRUG_EXISTS = "Drug exists. Try another drug.";
+
+
+//    public static final String INVALID_PRODUCTION_DATE = "Invalid production date.";
+//    public static final String INVALID_EXPIRATION_DATE = "Invalid expiration date.";
 
 //    public static final String EMPTY_DOSAGE_FORM_ID = "Dosage form ID must NOT be empty.";
 //    public static final String INVALID_DOSAGE_FORM_ID = "Dosage form ID contains digits only.";
@@ -48,11 +50,11 @@ public class ErrorMessage {
     }
 
     public static String getProductionDateLimit(String date) {
-        return "Production date must be between " + date + " today.";
+        return "Production date must be between " + date + " and one day before today.";
     }
 
     public static String getExpirationDateLimit(String date) {
-        return "Expiration date must be between today and " + date + ".";
+        return "Expiration date must be between one day after today and " + date + ".";
     }
 
 }

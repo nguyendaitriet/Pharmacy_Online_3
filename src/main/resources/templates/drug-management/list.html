@@ -12,13 +12,15 @@
     <link href="/assets/libs/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/libs/datatables/select.bootstrap4.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/libs/custombox/custombox.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/sweetalert2.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/style.css" rel="stylesheet" type="text/css">
 
     <script src="/assets/js/jQuery/jquery-3.6.0.min.js"></script>
-    <script src="/assets/js/jQuery/jquery.validate.js"></script>
 
     <th:block th:replace="/layout/header :: header-p2"></th:block>
 
     <script src="/assets/libs/toastr/js/iziToast.min.js"></script>
+    <script src="/assets/js/sweetAlert2/sweetalert2.min.js"></script>
 
 </head>
 
@@ -78,7 +80,7 @@
                                     </div>
                                 </div>
 
-                                <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <table id="tbDrugList" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
                                     <thead>
                                         <tr class="text-center">
@@ -93,28 +95,8 @@
                                     </thead>
 
                                     <tbody>
-<!--                                        <c:set var="i" value="0"></c:set>-->
-<!--                                        <c:forEach var="drug" items="${drugDTOList}">-->
-<!--                                            <tr>-->
-<!--                                                <td>${i=i+1}</td>-->
-<!--                                                <td>${drug.getDrugName()}</td>-->
-<!--                                                <td>${drug.getDrugContent()}</td>-->
-<!--                                                <td>${drug.getQuantity()}</td>-->
-<!--                                                <td>${drug.getPricePerPill()}</td>-->
-<!--                                                <td>-->
-<!--                                                    <fmt:formatDate pattern = "dd/MM/yyyy" value = "${drug.getExpirationDate()}" />-->
-<!--                                                </td>-->
-<!--                                                <td>-->
-<!--                                                    <a title="Edit" href="/drugs?action=edit&id=${drug.getId()}" class="btn btn-outline-secondary">-->
-<!--                                                        <i class="fas fa-pencil-alt"></i>-->
-<!--                                                    </a>-->
-<!--                                                    <a title="Remove" href="/drugs?action=remove&id=${drug.getId()}" class="btn btn-outline-danger">-->
-<!--                                                        <i class="fas fa-trash"></i>-->
-<!--                                                    </a>-->
-<!--                                                </td>-->
-<!--                                            </tr>-->
-<!--                                        </c:forEach>-->
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>
@@ -137,8 +119,11 @@
     <!-- ============================================================== -->
 
 </div>
+<th:block th:include="/drug-management/temp_option :: temp_option"/>
+<th:block th:include="/drug-management/temp_list_table :: temp_list_table_drug"/>
 
 <th:block th:replace="/layout/modal/add-new-drug :: add-new-drug"></th:block>
+<th:block th:replace="/layout/modal/update-drug :: update-drug"></th:block>
 <!-- END wrapper -->
 
 <!-- Vendor js -->
@@ -171,6 +156,10 @@
 <!-- App js -->
 <script src="/assets/js/app.min.js"></script>
 
+<script src="/assets/js/jQuery/jquery.validate.js"></script>
+
+<script src="/assets/js/custom-validation.js"></script>
+
 <script src="/assets/js/apps.js"></script>
 
 <script>
@@ -178,7 +167,7 @@
         urls: {
             getAllDrugs: App.BASE_URL_DRUG,
             getAllDosageForms: App.BASE_URL_DOSAGE_FORM,
-
+            createNewDrug: App.BASE_URL_DRUG + "/create"
         },
         element: {},
         loadData: {},
@@ -194,10 +183,14 @@
     }
 
     page.element.btnShowCreateForm = $("#btnCreateForm");
+    page.element.tempCustomer = $("#tempDrug");
+    page.element.tbDrugList = $("#tbDrugList tbody");
 
     page.dialogs.element.mdCreateDrug = $("#mdCreateDrug");
+    page.dialogs.element.mdUpdateDrug = $("#mdUpdateDrug");
 
     page.dialogs.element.frmCreDrug = $("#frmCreDrug");
+    page.dialogs.element.frmUpDrug = $("#frmUpDrug");
     page.dialogs.element.tempOption = $("#tempOption");
 
     page.dialogs.element.drugNameCre = $("#drugNameCre");
@@ -211,25 +204,144 @@
     page.dialogs.element.noteCre = $("#noteCre");
     page.dialogs.element.btnCreateDrug = $("#btnCreDrug");
 
-    page.dialogs.alertDanger.modalCreate = $("#mdCreateDrug .modal-body .modal-alert-danger");
+    page.dialogs.element.drugNameUp = $("#drugNameUp");
+    page.dialogs.element.drugContentUp = $("#drugContentUp");
+    page.dialogs.element.quantityUp = $("#quantityUp");
+    page.dialogs.element.dosageFormUp = $("#dosageFormUp");
+    page.dialogs.element.usageUp = $("#usageUp");
+    page.dialogs.element.pricePerUnitUp = $("#pricePerUnitUp");
+    page.dialogs.element.productionDateUp = $("#productionDateUp");
+    page.dialogs.element.expirationDateUp = $("#expirationDateUp");
+    page.dialogs.element.noteUp = $("#noteUp");
+    page.dialogs.element.btnUpdateDrug = $("#btnUpDrug");
+
+    page.dialogs.alertDanger.mdCreateDrug = $("#mdCreateDrug .modal-body .modal-alert-danger");
+    page.dialogs.alertDanger.frmCreateDrug = $("#frmCreDrug input.error");
+    page.dialogs.alertDanger.mdUpdateDrug = $("#mdUpdateDrug .modal-body .modal-alert-danger");
+    page.dialogs.alertDanger.frmUpdateDrug = $("#frmUpDrug input.error");
 
 
     let drug = new Drug();
     let dosageForm = new DosageForm();
 
+    let tempDrug = $.validator.format($.trim(page.element.tempCustomer.val().toString()));
+    let tempOption = $.validator.format($.trim(page.dialogs.element.tempOption.val().toString()));
+
+    page.loadData.getAllDrugs = () => {
+        return $.ajax({
+            type: "GET",
+            url: page.urls.getAllDrugs
+        })
+        .done((data) => {
+
+            $.each(data, (index, item) => {
+                drug = item;
+                page.commands.addRow();
+            });
+
+        })
+        .fail(() => {
+            App.showErrorAlert("Drug list not found!");
+        })
+    };
+
+    page.commands.addRow = () => {
+        page.element.tbDrugList.prepend($(tempDrug(drug.id, drug.drugName, drug.drugContent, drug.quantity, drug.pricePerUnit, drug.expirationDate)));
+    }
+
     page.commands.showCreateDrugModal = () => {
         page.dialogs.element.mdCreateDrug.modal("show");
     }
 
+    page.commands.hideCreateDrugModal = () => {
+        page.dialogs.element.mdCreateDrug.modal("hide");
+    }
+
+    page.commands.showUpdateDrugModal = () => {
+        page.dialogs.element.mdUpdateDrug.modal("show");
+    }
+
+    page.commands.hideUpdateDrugModal = () => {
+        page.dialogs.element.mdUpdateDrug.modal("hide");
+    }
+
+    page.command.handleBtnUpdateDrug = () => {
+
+    }
+
     page.dialogs.commands.createNewDrug = () => {
+
         delete drug.id;
+        drug.drugName = page.dialogs.element.drugNameCre.val();
+        drug.drugContent = page.dialogs.element.drugContentCre.val();
+        drug.quantity = page.dialogs.element.quantityCre.val();
+        drug.pricePerUnit = page.dialogs.element.pricePerUnitCre.val();
+        drug.drugUsage = page.dialogs.element.usageCre.val();
+        drug.productionDate = page.dialogs.element.productionDateCre.val();
+        drug.expirationDate = page.dialogs.element.expirationDateCre.val();
+        drug.note = page.dialogs.element.noteCre.val();
+        dosageForm.id = page.dialogs.element.dosageFormCre.val();
+        drug.dosageForm = dosageForm;
 
+        page.dialogs.alertDanger.mdCreateDrug.removeClass('show').addClass('hide').empty();
+
+        $.ajax({
+            type: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            url: page.urls.createNewDrug,
+            data: JSON.stringify(drug)
+        })
+        .done((data) => {
+            console.log(data);
+            drug = data;
+            page.commands.addRow();
+            App.showSuccessAlert(App.SUCCESS_CREATED);
+            page.commands.hideCreateDrugModal();
+        })
+        .fail((jqXHR) => {
+            let str='';
+
+            if (jqXHR.responseJSON) {
+                $.each(jqXHR.responseJSON, (key,value) => {
+                    str += `<label id="${key}-error" class="error" for="${key}Cre">${value}</label>`
+                })
+
+                page.dialogs.alertDanger.mdCreateDrug.removeClass('hide').addClass('show').append(str);
+            }
+            else {
+                let str = `<label id="message-error" class="error">${jqXHR.responseText}</label>`
+                page.dialogs.alertDanger.mdCreateDrug.removeClass('hide').addClass('show').append(str);
+            }
+        })
 
     }
 
-    page.loadData.getAllDosageForm = () => {
-
+    page.dialogs.loadData.getAllDosageForm = () => {
+        return $.ajax({
+            type: "GET",
+            url: page.urls.getAllDosageForms
+        })
+        .done((data) => {
+            $.each(data, (i, item) => {
+                page.dialogs.element.dosageFormCre.append($(tempOption(item.id, item.name)));
+            });
+        })
+        .fail(() => {
+            App.showErrorAlert("Dosage form list not found!");
+        })
     }
+
+    page.dialogs.close.mdCreateDrug = () => {
+        page.dialogs.alertDanger.mdCreateDrug.empty();
+        page.dialogs.alertDanger.mdCreateDrug.addClass("hide");
+        page.dialogs.alertDanger.mdCreateDrug.removeClass("show");
+        page.dialogs.alertDanger.frmCreateDrug.removeClass("error");
+        page.dialogs.element.frmCreDrug[0].reset();
+        page.dialogs.element.frmCreDrug.validate().resetForm();
+    };
 
     page.initializeControlEvent = () => {
 
@@ -239,14 +351,18 @@
 
         page.dialogs.element.btnCreateDrug.on("click", () => {
             page.dialogs.element.frmCreDrug.submit();
-            page.dialogs.commands.createNewDrug();
 
         })
 
+        page.dialogs.element.mdCreateDrug.on("hidden.bs.modal", function () {
+            page.dialogs.close.mdCreateDrug();
+        });
 
     }
 
     $(function () {
+        page.loadData.getAllDrugs();
+        page.dialogs.loadData.getAllDosageForm();
         page.initializeControlEvent();
     });
 

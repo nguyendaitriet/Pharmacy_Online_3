@@ -2,6 +2,7 @@ package com.tr.pharmacy.online.model.dto;
 
 
 import com.tr.pharmacy.online.model.drug.DosageForm;
+import com.tr.pharmacy.online.model.drug.Drug;
 import com.tr.pharmacy.online.utils.ErrorMessage;
 import com.tr.pharmacy.online.utils.ParsingValidationUtils;
 import com.tr.pharmacy.online.utils.ValidationUtils;
@@ -9,16 +10,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Past;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Accessors(chain = true)
 public class DrugDTO implements Validator {
 
     private Long id;
@@ -30,9 +36,18 @@ public class DrugDTO implements Validator {
     private String expirationDate;
     private String drugUsage;
     private String note;
-    @Valid
-    private DosageForm dosageForm;
 
+    @Valid
+    private DosageFormDTO dosageForm;
+
+    public DrugDTO(Long id, String drugName, double drugContent, int quantity, BigDecimal pricePerUnit, LocalDate expirationDate) {
+        this.id = id;
+        this.drugName = drugName;
+        this.drugContent = String.valueOf(drugContent);
+        this.quantity = String.valueOf(quantity);
+        this.pricePerUnit = String.valueOf(pricePerUnit);
+        this.expirationDate = expirationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -54,7 +69,7 @@ public class DrugDTO implements Validator {
             errors.rejectValue("drugName","400", ErrorMessage.getNotEmptyMessage("Drug name"));
         }
         else {
-            boolean isDrugNameIdValid = java.util.regex.Pattern.matches("[\\d\\w]+", drugName);
+            boolean isDrugNameIdValid = java.util.regex.Pattern.matches(ValidationUtils.FULL_NAME_REGEX, drugName);
             if (!isDrugNameIdValid) {
                 errors.rejectValue("drugName","400", ErrorMessage.VALID_DRUG_NAME);
             }
@@ -64,7 +79,7 @@ public class DrugDTO implements Validator {
             errors.rejectValue("drugContent","400", ErrorMessage.getNotEmptyMessage("Drug content"));
         }
         else {
-            boolean isDrugContentValid = java.util.regex.Pattern.matches("[\\d\\w.]+", drugName);
+            boolean isDrugContentValid = java.util.regex.Pattern.matches(ValidationUtils.DOUBLE_REGEX, drugContent);
             if (!isDrugContentValid) {
                 errors.rejectValue("drugContent","400", ErrorMessage.getNotNumberMessage("Drug content"));
             }
@@ -83,7 +98,7 @@ public class DrugDTO implements Validator {
             errors.rejectValue("quantity","400", ErrorMessage.getNotEmptyMessage("Quantity"));
         }
         else {
-            boolean isQuantityValid = java.util.regex.Pattern.matches("\\d+", quantity);
+            boolean isQuantityValid = java.util.regex.Pattern.matches(ValidationUtils.INTEGER_REGEX, quantity);
             if (!isQuantityValid) {
                 errors.rejectValue("quantity","400", ErrorMessage.getNotNumberMessage("Quantity"));
             }
@@ -102,7 +117,7 @@ public class DrugDTO implements Validator {
             errors.rejectValue("pricePerUnit","400", ErrorMessage.getNotEmptyMessage("Price"));
         }
         else {
-            boolean isQuantityValid = java.util.regex.Pattern.matches("\\d+", quantity);
+            boolean isQuantityValid = java.util.regex.Pattern.matches(ValidationUtils.INTEGER_REGEX, quantity);
             if (!isQuantityValid) {
                 errors.rejectValue("pricePerUnit","400", ErrorMessage.getNotNumberMessage("Price"));
             }
@@ -141,13 +156,24 @@ public class DrugDTO implements Validator {
             }
             else {
                 LocalDate validExpirationDate = LocalDate.parse(expirationDate);
-                if (!ValidationUtils.checkProductionDate(validExpirationDate)) {
-                    errors.rejectValue("expirationDate","400", ErrorMessage.getProductionDateLimit(ValidationUtils.maxExpirationDate));
+                if (!ValidationUtils.checkExpirationDate(validExpirationDate)) {
+                    errors.rejectValue("expirationDate","400", ErrorMessage.getExpirationDateLimit(ValidationUtils.maxExpirationDate));
                 }
             }
         }
 
+    }
 
-
+    public Drug toDrug(DosageForm dosageForm) {
+        return new Drug()
+                .setDrugName(this.drugName.trim())
+                .setDrugContent(Double.parseDouble(this.drugContent))
+                .setQuantity(Integer.parseInt(this.quantity))
+                .setPricePerUnit(new BigDecimal(this.pricePerUnit))
+                .setDosageForm(dosageForm)
+                .setDrugUsage(this.drugUsage.trim())
+                .setProductionDate(LocalDate.parse(this.productionDate))
+                .setExpirationDate(LocalDate.parse(this.expirationDate))
+                .setNote(this.note.trim());
     }
 }

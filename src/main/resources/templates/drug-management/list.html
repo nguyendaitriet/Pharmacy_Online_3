@@ -6,18 +6,19 @@
     <th:block th:replace="/layout/header :: header-p1"></th:block>
     <!-- Notification css (Toast) -->
     <link href="/assets/libs/toastr/css/iziToast.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/sweetalert2.min.css" rel="stylesheet" type="text/css">
 
     <link href="/assets/libs/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/libs/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/libs/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/libs/datatables/select.bootstrap4.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/libs/custombox/custombox.min.css" rel="stylesheet" type="text/css">
-    <link href="/assets/css/sweetalert2.min.css" rel="stylesheet" type="text/css">
     <link href="/assets/css/style.css" rel="stylesheet" type="text/css">
 
     <script src="/assets/js/jQuery/jquery-3.6.0.min.js"></script>
 
     <th:block th:replace="/layout/header :: header-p2"></th:block>
+
 
     <script src="/assets/libs/toastr/js/iziToast.min.js"></script>
     <script src="/assets/js/sweetAlert2/sweetalert2.min.js"></script>
@@ -79,9 +80,9 @@
                                         </div>
                                     </div>
                                 </div>
-<!--                                id="datatable"-->
-                                <table class="table table-bordered dt-responsive nowrap tbDrugList" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <input type="hidden" id="currentRow"/>
 
+                                <table id="datatable" class="table table-bordered dt-responsive nowrap tbDrugList" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
@@ -169,7 +170,8 @@
             getDrugById: App.BASE_URL_DRUG + "/findDrug",
             getAllDosageForms: App.BASE_URL_DOSAGE_FORM,
             createNewDrug: App.BASE_URL_DRUG + "/create",
-            updateDrug: App.BASE_URL_DRUG + "/update"
+            updateDrug: App.BASE_URL_DRUG + "/update",
+            removeDrug: App.BASE_URL_DRUG + "/remove"
         },
         element: {},
         loadData: {},
@@ -184,6 +186,7 @@
         }
     }
 
+    page.element.currentRow = $("#currentRow");
     page.element.btnShowCreateForm = $("#btnCreateForm");
     page.element.tempCustomer = $("#tempDrug");
     page.element.tbDrugList = $(".tbDrugList tbody");
@@ -264,6 +267,12 @@
         page.element.tbDrugList.prepend($(tempDrug(drug.id, drug.drugName, drug.drugContent, drug.quantity, drug.pricePerUnit, drug.expirationDate)));
     }
 
+    page.commands.updateRow = (data) => {
+        let currentRow = $("#tr_" + data.id);
+        let updatedRow = $(tempDrug(data.id, data.drugName, data.drugContent, data.quantity, data.pricePerUnit, data.expirationDate));
+        currentRow.replaceWith(updatedRow);
+    }
+
     page.commands.showCreateDrugModal = () => {
         page.dialogs.element.mdCreateDrug.modal("show");
     }
@@ -280,6 +289,15 @@
         page.dialogs.element.mdUpdateDrug.modal("hide");
     }
 
+    page.commands.showRemoveDrugModal = (drugId) => {
+        App.showConfirmDialog(App.REMOVE_DRUG)
+            .then((result) => {
+                if (result.isConfirmed) {
+                    page.dialogs.commands.removeDrug(drugId);
+                }
+            });
+    }
+
     page.commands.handleBtnUpdateDrug = () => {
         $(document).on("click", ".btn-update-drug", function() {
             let id = $(this).data("id");
@@ -294,6 +312,15 @@
                 page.dialogs.element.productionDateUp.val(drug.productionDate);
                 page.dialogs.element.expirationDateUp.val(drug.expirationDate);
                 page.dialogs.element.noteUp.val(drug.note);
+            });
+        });
+    }
+
+    page.commands.handleBtnRemoveDrug = () => {
+        $(document).on("click", ".btn-remove-drug", function() {
+            let id = $(this).data("id");
+            page.commands.findDrugById(id).then(() => {
+                page.commands.showRemoveDrugModal(id);
             });
         });
     }
@@ -371,28 +398,40 @@
             url: page.urls.updateDrug,
             data: JSON.stringify(drug)
         })
-            .done((data) => {
-
-                drug = data;
-                page.commands.addRow();
-                App.showSuccessAlert(App.SUCCESS_UPDATED);
-                page.commands.hideCreateDrugModal();
-
-            })
-            .fail((jqXHR) => {
-                let str='';
-                if (jqXHR.responseJSON) {
-                    $.each(jqXHR.responseJSON, (key,value) => {
-                        str += `<label id="${key}-error" class="error" for="${key}Up">${value}</label>`
-                    })
-                    page.dialogs.alertDanger.mdUpdateDrug.removeClass('hide').addClass('show').append(str);
-                }
-                else {
-                    let str = `<label id="message-error" class="error">${jqXHR.responseText}</label>`
-                    page.dialogs.alertDanger.mdUpdateDrug.removeClass('hide').addClass('show').append(str);
-                }
-            })
+        .done((data) => {
+            page.commands.updateRow(data);
+            App.showSuccessAlert(App.SUCCESS_UPDATED);
+            page.commands.hideUpdateDrugModal();
+        })
+        .fail((jqXHR) => {
+            let str='';
+            if (jqXHR.responseJSON) {
+                $.each(jqXHR.responseJSON, (key,value) => {
+                    str += `<label id="${key}-error" class="error" for="${key}Up">${value}</label>`
+                })
+                page.dialogs.alertDanger.mdUpdateDrug.removeClass('hide').addClass('show').append(str);
+            }
+            else {
+                let str = `<label id="message-error" class="error">${jqXHR.responseText}</label>`
+                page.dialogs.alertDanger.mdUpdateDrug.removeClass('hide').addClass('show').append(str);
+            }
+        })
     };
+
+    page.dialogs.commands.removeDrug = (id) => {
+        $.ajax({
+            type: "DELETE",
+            url: page.urls.removeDrug + "/" + id
+        })
+        .done(() => {
+            App.showSuccessAlert(App.SUCCESS_REMOVED);
+            $("#tr_" + id).remove();
+        })
+        .fail( (jQXHR) => {
+            App.showErrorAlert(jQXHR.responseText);
+        });
+
+    }
 
     page.dialogs.loadData.getAllDosageForms = () => {
         return $.ajax({
@@ -421,6 +460,16 @@
         page.dialogs.element.frmCreDrug.validate().resetForm();
     };
 
+    page.dialogs.close.mdUpdateDrug = () => {
+        page.element.currentRow.val("");
+        page.dialogs.alertDanger.mdUpdateDrug.empty();
+        page.dialogs.alertDanger.mdUpdateDrug.addClass("hide");
+        page.dialogs.alertDanger.mdUpdateDrug.removeClass("show");
+        page.dialogs.alertDanger.frmUpdateDrug.removeClass("error");
+        page.dialogs.element.frmUpDrug[0].reset();
+        page.dialogs.element.frmUpDrug.validate().resetForm();
+    };
+
     page.initializeControlEvent = () => {
 
         page.element.btnShowCreateForm.on("click", () => {
@@ -429,7 +478,6 @@
 
         page.dialogs.element.btnCreateDrug.on("click", () => {
             page.dialogs.element.frmCreDrug.submit();
-
         })
 
         page.dialogs.element.btnUpdateDrug.on("click", () => {
@@ -440,7 +488,13 @@
             page.dialogs.close.mdCreateDrug();
         });
 
+        page.dialogs.element.mdUpdateDrug.on("hidden.bs.modal", function () {
+            page.dialogs.close.mdUpdateDrug();
+        });
+
         page.commands.handleBtnUpdateDrug();
+
+        page.commands.handleBtnRemoveDrug();
 
     }
 
@@ -452,8 +506,5 @@
 
 
 </script>
-
-
-
 </body>
 </html>

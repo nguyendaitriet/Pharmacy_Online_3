@@ -10,6 +10,7 @@ import com.tr.pharmacy.online.utils.AppUtils;
 import com.tr.pharmacy.online.utils.ErrorMessage;
 import com.tr.pharmacy.online.utils.ParsingValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -109,6 +110,25 @@ public class DrugAPI {
         } catch (Exception e) {
             return new ResponseEntity<>(ErrorMessage.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @DeleteMapping("/remove/{drugId}")
+    public ResponseEntity<?> removeDrug(@PathVariable Long drugId) {
+
+        Optional<Drug> drug = drugService.findByIdAndDeletedFalse(drugId);
+        if (drug.isPresent()) {
+
+            try {
+                drug.get().setDeleted(true);
+                drugService.save(drug.get());
+
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (DataIntegrityViolationException e) {
+                return new ResponseEntity<>(ErrorMessage.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        return new ResponseEntity<>("Drug doesn't exist.", HttpStatus.NOT_FOUND);
     }
 
 }

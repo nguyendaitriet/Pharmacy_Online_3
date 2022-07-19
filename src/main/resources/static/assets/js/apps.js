@@ -8,15 +8,20 @@ class App {
 
     static SUCCESS_CREATED = "Successful data generation!";
     static SUCCESS_UPDATED = "Update data successfully!";
+    static SUCCESS_REMOVED = "Remove successfully!";
 
-    static showSuspendedConfirmDialog() {
+    static REMOVE_DRUG = "Are you sure that you want to remove the this drug?";
+    static BLOCK_USER = 'Are you sure that you want to block the this user?';
+
+
+    static showConfirmDialog(message) {
         return Swal.fire({
-            icon: 'warning',
-            text: 'Are you sure to suspend the selected customer ?',
+            icon: 'WARNING',
+            text: message,
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, please suspend this client !',
+            confirmButtonText: 'Yes, please!',
             cancelButtonText: 'Cancel',
         })
     }

@@ -19,6 +19,7 @@ import javax.validation.constraints.Past;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -69,7 +70,7 @@ public class DrugDTO implements Validator {
             errors.rejectValue("drugName","400", ErrorMessage.getNotEmptyMessage("Drug name"));
         }
         else {
-            boolean isDrugNameIdValid = java.util.regex.Pattern.matches(ValidationUtils.FULL_NAME_REGEX, drugName);
+            boolean isDrugNameIdValid = Pattern.matches(ValidationUtils.FULL_NAME_REGEX, drugName);
             if (!isDrugNameIdValid) {
                 errors.rejectValue("drugName","400", ErrorMessage.VALID_DRUG_NAME);
             }
@@ -79,7 +80,7 @@ public class DrugDTO implements Validator {
             errors.rejectValue("drugContent","400", ErrorMessage.getNotEmptyMessage("Drug content"));
         }
         else {
-            boolean isDrugContentValid = java.util.regex.Pattern.matches(ValidationUtils.DOUBLE_REGEX, drugContent);
+            boolean isDrugContentValid = Pattern.matches(ValidationUtils.DOUBLE_REGEX, drugContent);
             if (!isDrugContentValid) {
                 errors.rejectValue("drugContent","400", ErrorMessage.getNotNumberMessage("Drug content"));
             }
@@ -98,16 +99,16 @@ public class DrugDTO implements Validator {
             errors.rejectValue("quantity","400", ErrorMessage.getNotEmptyMessage("Quantity"));
         }
         else {
-            boolean isQuantityValid = java.util.regex.Pattern.matches(ValidationUtils.INTEGER_REGEX, quantity);
+            boolean isQuantityValid = Pattern.matches(ValidationUtils.INTEGER_REGEX, quantity);
             if (!isQuantityValid) {
                 errors.rejectValue("quantity","400", ErrorMessage.getNotNumberMessage("Quantity"));
             }
             else {
-                int validDrugContent = Integer.parseInt(drugContent);
-                if (validDrugContent <= 0) {
+                int validQuantity = Integer.parseInt(quantity);
+                if (validQuantity <= 0) {
                     errors.rejectValue("quantity","400", ErrorMessage.getMinValue("Quantity", "0"));
                 }
-                if (validDrugContent > 5000000) {
+                if (validQuantity > 5000000) {
                     errors.rejectValue("quantity","400", ErrorMessage.getMaxValue("Quantity", "5,000,000"));
                 }
             }
@@ -117,16 +118,16 @@ public class DrugDTO implements Validator {
             errors.rejectValue("pricePerUnit","400", ErrorMessage.getNotEmptyMessage("Price"));
         }
         else {
-            boolean isQuantityValid = java.util.regex.Pattern.matches(ValidationUtils.INTEGER_REGEX, quantity);
-            if (!isQuantityValid) {
+            boolean isPricePerUnitValid = Pattern.matches(ValidationUtils.INTEGER_REGEX, pricePerUnit);
+            if (!isPricePerUnitValid) {
                 errors.rejectValue("pricePerUnit","400", ErrorMessage.getNotNumberMessage("Price"));
             }
             else {
-                int validDrugContent = Integer.parseInt(drugContent);
-                if (validDrugContent <= 0) {
+                int validPricePerUnit = Integer.parseInt(pricePerUnit);
+                if (validPricePerUnit <= 0) {
                     errors.rejectValue("pricePerUnit","400", ErrorMessage.getMinValue("Price", "0"));
                 }
-                if (validDrugContent > 5000000) {
+                if (validPricePerUnit > 5000000) {
                     errors.rejectValue("pricePerUnit","400", ErrorMessage.getMaxValue("Price", "5,000,000"));
                 }
             }
@@ -166,6 +167,7 @@ public class DrugDTO implements Validator {
 
     public Drug toDrug(DosageForm dosageForm) {
         return new Drug()
+                .setId(this.id)
                 .setDrugName(this.drugName.trim())
                 .setDrugContent(Double.parseDouble(this.drugContent))
                 .setQuantity(Integer.parseInt(this.quantity))

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 
 public class ParsingValidationUtils {
-    public static boolean isLongParsing(String number) {
+    public static boolean isLongParsable(String number) {
         try {
             Long.parseLong(number);
             return true;
@@ -15,7 +15,7 @@ public class ParsingValidationUtils {
         }
     }
 
-    public static boolean isIntParsing(String number) {
+    public static boolean isIntParsable(String number) {
         try {
             Integer.parseInt(number);
             return true;
@@ -24,7 +24,7 @@ public class ParsingValidationUtils {
         }
     }
 
-    public static boolean isDecimalParsing(String number) {
+    public static boolean isDecimalParsable(String number) {
         try {
             Double.parseDouble(number);
             return true;

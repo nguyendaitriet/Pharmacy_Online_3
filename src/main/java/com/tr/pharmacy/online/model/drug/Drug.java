@@ -53,7 +53,7 @@ public class Drug extends BaseEntity {
 
     private String note;
 
-    public DrugDTO toDrugDTO() {
+    public DrugDTO toDrugDTOForShowing() {
         return new DrugDTO()
                 .setId(this.id)
                 .setDrugName(this.drugName)
@@ -62,4 +62,19 @@ public class Drug extends BaseEntity {
                 .setPricePerUnit(String.valueOf(this.pricePerUnit))
                 .setExpirationDate(this.expirationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
+
+    public DrugDTO toDrugDTOForUpdating() {
+        return new DrugDTO()
+                .setId(this.id)
+                .setDrugName(this.drugName)
+                .setDrugContent(String.valueOf(this.drugContent))
+                .setQuantity(String.valueOf(this.quantity))
+                .setPricePerUnit(String.valueOf(this.pricePerUnit))
+                .setDosageForm(this.dosageForm.toDosageFormDTO())
+                .setDrugUsage(this.drugUsage)
+                .setProductionDate(this.productionDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .setExpirationDate(this.expirationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .setNote(this.note);
+    }
+
 }

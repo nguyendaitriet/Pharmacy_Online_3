@@ -79,8 +79,8 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <table id="tbDrugList" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+<!--                                id="datatable"-->
+                                <table class="table table-bordered dt-responsive nowrap tbDrugList" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
                                     <thead>
                                         <tr class="text-center">
@@ -149,7 +149,7 @@
 <script src="/assets/libs/datatables/dataTables.select.min.js"></script>
 
 <!-- Datatables init -->
-<script src="/assets/js/pages/datatables.init.js"></script>
+<!--<script src="/assets/js/pages/datatables.init.js"></script>-->
 
 <script src="/assets/libs/custombox/custombox.min.js"></script>
 
@@ -166,8 +166,10 @@
     let page = {
         urls: {
             getAllDrugs: App.BASE_URL_DRUG,
+            getDrugById: App.BASE_URL_DRUG + "/findDrug",
             getAllDosageForms: App.BASE_URL_DOSAGE_FORM,
-            createNewDrug: App.BASE_URL_DRUG + "/create"
+            createNewDrug: App.BASE_URL_DRUG + "/create",
+            updateDrug: App.BASE_URL_DRUG + "/update"
         },
         element: {},
         loadData: {},
@@ -184,7 +186,7 @@
 
     page.element.btnShowCreateForm = $("#btnCreateForm");
     page.element.tempCustomer = $("#tempDrug");
-    page.element.tbDrugList = $("#tbDrugList tbody");
+    page.element.tbDrugList = $(".tbDrugList tbody");
 
     page.dialogs.element.mdCreateDrug = $("#mdCreateDrug");
     page.dialogs.element.mdUpdateDrug = $("#mdUpdateDrug");
@@ -245,6 +247,19 @@
         })
     };
 
+    page.commands.findDrugById = (drugId) => {
+        return $.ajax({
+            type: "GET",
+            url: page.urls.getDrugById + "/" + drugId
+        })
+        .done((data) => {
+            drug = data;
+        })
+        .fail(() => {
+            App.showErrorAlert("Drug not found!");
+        })
+    }
+
     page.commands.addRow = () => {
         page.element.tbDrugList.prepend($(tempDrug(drug.id, drug.drugName, drug.drugContent, drug.quantity, drug.pricePerUnit, drug.expirationDate)));
     }
@@ -265,8 +280,22 @@
         page.dialogs.element.mdUpdateDrug.modal("hide");
     }
 
-    page.command.handleBtnUpdateDrug = () => {
-
+    page.commands.handleBtnUpdateDrug = () => {
+        $(document).on("click", ".btn-update-drug", function() {
+            let id = $(this).data("id");
+            page.commands.findDrugById(id).then(() => {
+                page.commands.showUpdateDrugModal();
+                page.dialogs.element.drugNameUp.val(drug.drugName);
+                page.dialogs.element.drugContentUp.val(drug.drugContent);
+                page.dialogs.element.quantityUp.val(drug.quantity);
+                page.dialogs.element.dosageFormUp.val(drug.dosageForm.id);
+                page.dialogs.element.usageUp.val(drug.drugUsage);
+                page.dialogs.element.pricePerUnitUp.val(drug.pricePerUnit);
+                page.dialogs.element.productionDateUp.val(drug.productionDate);
+                page.dialogs.element.expirationDateUp.val(drug.expirationDate);
+                page.dialogs.element.noteUp.val(drug.note);
+            });
+        });
     }
 
     page.dialogs.commands.createNewDrug = () => {
@@ -295,7 +324,6 @@
             data: JSON.stringify(drug)
         })
         .done((data) => {
-            console.log(data);
             drug = data;
             page.commands.addRow();
             App.showSuccessAlert(App.SUCCESS_CREATED);
@@ -319,7 +347,54 @@
 
     }
 
-    page.dialogs.loadData.getAllDosageForm = () => {
+    page.dialogs.commands.updateDrug = () => {
+
+        drug.drugName = page.dialogs.element.drugNameUp.val();
+        drug.drugContent = page.dialogs.element.drugContentUp.val();
+        drug.quantity = page.dialogs.element.quantityUp.val();
+        drug.pricePerUnit = page.dialogs.element.pricePerUnitUp.val();
+        drug.drugUsage = page.dialogs.element.usageUp.val();
+        drug.productionDate = page.dialogs.element.productionDateUp.val();
+        drug.expirationDate = page.dialogs.element.expirationDateUp.val();
+        drug.note = page.dialogs.element.noteUp.val();
+        dosageForm.id = page.dialogs.element.dosageFormUp.val();
+        drug.dosageForm = dosageForm;
+
+        page.dialogs.alertDanger.mdUpdateDrug.removeClass('show').addClass('hide').empty();
+
+        $.ajax({
+            type: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            url: page.urls.updateDrug,
+            data: JSON.stringify(drug)
+        })
+            .done((data) => {
+
+                drug = data;
+                page.commands.addRow();
+                App.showSuccessAlert(App.SUCCESS_UPDATED);
+                page.commands.hideCreateDrugModal();
+
+            })
+            .fail((jqXHR) => {
+                let str='';
+                if (jqXHR.responseJSON) {
+                    $.each(jqXHR.responseJSON, (key,value) => {
+                        str += `<label id="${key}-error" class="error" for="${key}Up">${value}</label>`
+                    })
+                    page.dialogs.alertDanger.mdUpdateDrug.removeClass('hide').addClass('show').append(str);
+                }
+                else {
+                    let str = `<label id="message-error" class="error">${jqXHR.responseText}</label>`
+                    page.dialogs.alertDanger.mdUpdateDrug.removeClass('hide').addClass('show').append(str);
+                }
+            })
+    };
+
+    page.dialogs.loadData.getAllDosageForms = () => {
         return $.ajax({
             type: "GET",
             url: page.urls.getAllDosageForms
@@ -327,6 +402,9 @@
         .done((data) => {
             $.each(data, (i, item) => {
                 page.dialogs.element.dosageFormCre.append($(tempOption(item.id, item.name)));
+            });
+            $.each(data, (i, item) => {
+                page.dialogs.element.dosageFormUp.append($(tempOption(item.id, item.name)));
             });
         })
         .fail(() => {
@@ -354,20 +432,28 @@
 
         })
 
+        page.dialogs.element.btnUpdateDrug.on("click", () => {
+            page.dialogs.element.frmUpDrug.submit();
+        })
+
         page.dialogs.element.mdCreateDrug.on("hidden.bs.modal", function () {
             page.dialogs.close.mdCreateDrug();
         });
+
+        page.commands.handleBtnUpdateDrug();
 
     }
 
     $(function () {
         page.loadData.getAllDrugs();
-        page.dialogs.loadData.getAllDosageForm();
+        page.dialogs.loadData.getAllDosageForms();
         page.initializeControlEvent();
     });
 
 
 </script>
+
+
 
 </body>
 </html>

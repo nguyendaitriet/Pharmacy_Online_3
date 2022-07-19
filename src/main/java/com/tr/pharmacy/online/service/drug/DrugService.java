@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class DrugService implements IDrugService{
+public class DrugService implements IDrugService {
 
     @Autowired
     private DrugRepository drugRepository;
@@ -31,8 +31,13 @@ public class DrugService implements IDrugService{
     }
 
     @Override
+    public Optional<Drug> findByIdAndDeletedFalse(Long id) {
+        return drugRepository.findByIdAndDeletedFalse(id);
+    }
+
+    @Override
     public Optional<Drug> findById(Long id) {
-        return Optional.empty();
+        return drugRepository.findById(id);
     }
 
     @Override
@@ -58,8 +63,18 @@ public class DrugService implements IDrugService{
         DosageForm dosageForm = drug.getDosageForm();
         LocalDate productionDate = drug.getProductionDate();
         LocalDate expirationDate = drug.getExpirationDate();
-        return drugRepository.existsByDrugNameAndDrugContentAndPricePerUnitAndDosageFormAndProductionDateAndExpirationDateAndDeletedFalse(drugName,drugContent,pricePerUnit,dosageForm,productionDate,expirationDate);
+        return drugRepository.existsByDrugNameAndDrugContentAndPricePerUnitAndDosageFormAndProductionDateAndExpirationDateAndDeletedFalse(drugName, drugContent, pricePerUnit, dosageForm, productionDate, expirationDate);
     }
 
+    public boolean isDrugUpdatedExisted(Drug drug) {
+        long id = drug.getId();
+        String drugName = drug.getDrugName();
+        double drugContent = drug.getDrugContent();
+        BigDecimal pricePerUnit = drug.getPricePerUnit();
+        DosageForm dosageForm = drug.getDosageForm();
+        LocalDate productionDate = drug.getProductionDate();
+        LocalDate expirationDate = drug.getExpirationDate();
+        return drugRepository.existsByDrugNameAndDrugContentAndPricePerUnitAndDosageFormAndProductionDateAndExpirationDateAndDeletedFalseAndIdIsNot(drugName, drugContent, pricePerUnit, dosageForm, productionDate, expirationDate, id);
+    }
 
 }

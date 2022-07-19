@@ -10,6 +10,8 @@ public class ErrorMessage {
 
     public static final String DRUG_EXISTS = "Drug exists. Try another drug.";
 
+    public static final String DOSAGE_FORM_NOT_EXIST = "Dosage form ID doesn't exist.";
+
 
 //    public static final String INVALID_PRODUCTION_DATE = "Invalid production date.";
 //    public static final String INVALID_EXPIRATION_DATE = "Invalid expiration date.";

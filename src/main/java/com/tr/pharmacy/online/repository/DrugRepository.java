@@ -10,11 +10,14 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DrugRepository extends JpaRepository<Drug, Long> {
 
     boolean existsByDrugNameAndDrugContentAndPricePerUnitAndDosageFormAndProductionDateAndExpirationDateAndDeletedFalse(String drugName, double drugContent, BigDecimal pricePerUnit, DosageForm dosageForm, LocalDate productionDate, LocalDate expirationDate);
+
+    boolean existsByDrugNameAndDrugContentAndPricePerUnitAndDosageFormAndProductionDateAndExpirationDateAndDeletedFalseAndIdIsNot(String drugName, double drugContent, BigDecimal pricePerUnit, DosageForm dosageForm, LocalDate productionDate, LocalDate expirationDate, Long id);
 
     @Query("SELECT NEW com.tr.pharmacy.online.model.dto.DrugDTO (" +
                 "d.id, " +
@@ -28,4 +31,5 @@ public interface DrugRepository extends JpaRepository<Drug, Long> {
             "WHERE d.deleted = FALSE ")
     List<DrugDTO> getAllDrugDTO();
 
+    Optional<Drug> findByIdAndDeletedFalse(Long id);
 }

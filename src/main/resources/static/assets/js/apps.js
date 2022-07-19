@@ -7,7 +7,7 @@ class App {
     static BASE_URL_PROVINCE = "https://vapi.vnappmob.com/api/province";
 
     static SUCCESS_CREATED = "Successful data generation!";
-    static SUCCESS_UPDATED = "Data update successful!";
+    static SUCCESS_UPDATED = "Update data successfully!";
 
     static showSuspendedConfirmDialog() {
         return Swal.fire({

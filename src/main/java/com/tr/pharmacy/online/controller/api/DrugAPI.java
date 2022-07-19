@@ -8,11 +8,11 @@ import com.tr.pharmacy.online.service.drug.IDosageFormService;
 import com.tr.pharmacy.online.service.drug.IDrugService;
 import com.tr.pharmacy.online.utils.AppUtils;
 import com.tr.pharmacy.online.utils.ErrorMessage;
+import com.tr.pharmacy.online.utils.ParsingValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,12 +47,31 @@ public class DrugAPI {
         }
     }
 
+    @GetMapping("/findDrug/{drugId}")
+    public ResponseEntity<?> findDrugById(@PathVariable String drugId) {
+        if (ParsingValidationUtils.isLongParsable(drugId)) {
+            long validId = Long.parseLong(drugId);
+            Optional<Drug> drug = drugService.findByIdAndDeletedFalse(validId);
+
+            if (drug.isPresent()) {
+                return new ResponseEntity<>(drug.get().toDrugDTOForUpdating(), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>("Drug doesn't exist.", HttpStatus.NOT_FOUND);
+    }
+
     @PostMapping("/create")
-    public ResponseEntity<?> createNewDrug(@Validated @RequestBody DrugDTO drugDTO,
-                                           BindingResult bindingResult) {
+    public ResponseEntity<?> createNewDrug(@RequestBody DrugDTO drugDTO, BindingResult bindingResult) {
+        return createOrUpdateDrug("create", drugDTO, bindingResult);
+    }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateDrug(@RequestBody DrugDTO drugDTO, BindingResult bindingResult) {
+        return createOrUpdateDrug("update", drugDTO, bindingResult);
+    }
+
+    private ResponseEntity<?> createOrUpdateDrug(String action, DrugDTO drugDTO, BindingResult bindingResult) {
         new DrugDTO().validate(drugDTO, bindingResult);
-
         new DosageFormDTO().validate(drugDTO.getDosageForm(), bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -63,22 +82,33 @@ public class DrugAPI {
         Optional<DosageForm> dosageForm = dosageFormService.findById(dosageFormId);
 
         if (!dosageForm.isPresent()) {
-            return new ResponseEntity<>(ErrorMessage.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ErrorMessage.DOSAGE_FORM_NOT_EXIST, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         DosageForm dosageFormObject = dosageForm.get();
         Drug newDrug = drugDTO.toDrug(dosageFormObject);
-        if (drugService.isDrugExisted(newDrug)) {
-            return new ResponseEntity<>(ErrorMessage.DRUG_EXISTS, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        switch (action) {
+            case "create": {
+                if (drugService.isDrugExisted(newDrug)) {
+                    return new ResponseEntity<>(ErrorMessage.DRUG_EXISTS, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                break;
+            }
+            case "update": {
+                if (drugService.isDrugUpdatedExisted(newDrug)) {
+                    return new ResponseEntity<>(ErrorMessage.DRUG_EXISTS, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                break;
+            }
         }
 
         try {
             Drug newDrugSaved = drugService.save(newDrug);
-            return new ResponseEntity<>(newDrugSaved.toDrugDTO(), HttpStatus.OK);
-        }
-        catch (Exception e) {
+            return new ResponseEntity<>(newDrugSaved.toDrugDTOForShowing(), HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(ErrorMessage.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
+
 }

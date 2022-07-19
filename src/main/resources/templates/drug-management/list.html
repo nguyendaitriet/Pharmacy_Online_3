@@ -221,10 +221,7 @@
     page.dialogs.element.btnUpdateDrug = $("#btnUpDrug");
 
     page.dialogs.alertDanger.mdCreateDrug = $("#mdCreateDrug .modal-body .modal-alert-danger");
-    page.dialogs.alertDanger.frmCreateDrug = $("#frmCreDrug input.error");
     page.dialogs.alertDanger.mdUpdateDrug = $("#mdUpdateDrug .modal-body .modal-alert-danger");
-    page.dialogs.alertDanger.frmUpdateDrug = $("#frmUpDrug input.error");
-
 
     let drug = new Drug();
     let dosageForm = new DosageForm();
@@ -455,7 +452,7 @@
         page.dialogs.alertDanger.mdCreateDrug.empty();
         page.dialogs.alertDanger.mdCreateDrug.addClass("hide");
         page.dialogs.alertDanger.mdCreateDrug.removeClass("show");
-        page.dialogs.alertDanger.frmCreateDrug.removeClass("error");
+        page.dialogs.element.frmCreDrug.find("input.error").removeClass("error");
         page.dialogs.element.frmCreDrug[0].reset();
         page.dialogs.element.frmCreDrug.validate().resetForm();
     };
@@ -465,7 +462,7 @@
         page.dialogs.alertDanger.mdUpdateDrug.empty();
         page.dialogs.alertDanger.mdUpdateDrug.addClass("hide");
         page.dialogs.alertDanger.mdUpdateDrug.removeClass("show");
-        page.dialogs.alertDanger.frmUpdateDrug.removeClass("error");
+        page.dialogs.element.frmUpDrug.find("input.error").removeClass("error");
         page.dialogs.element.frmUpDrug[0].reset();
         page.dialogs.element.frmUpDrug.validate().resetForm();
     };

@@ -31,7 +31,7 @@ $(function () {
                 page.dialogs.alertDanger.mdCreateDrug.removeClass("hide").addClass("show");
             } else {
                 page.dialogs.alertDanger.mdCreateDrug.removeClass("show").addClass("hide").empty();
-                page.dialogs.alertDanger.frmCreateDrug.removeClass("error");
+                page.dialogs.element.frmCreDrug.removeClass("error");
             }
             this.defaultShowErrors();
         },
@@ -88,7 +88,7 @@ $(function () {
                 page.dialogs.alertDanger.mdUpdateDrug.removeClass("hide").addClass("show");
             } else {
                 page.dialogs.alertDanger.mdUpdateDrug.removeClass("show").addClass("hide").empty();
-                page.dialogs.alertDanger.frmUpdateDrug.removeClass("error");
+                page.dialogs.element.frmUpDrug.removeClass("error");
             }
             this.defaultShowErrors();
         },

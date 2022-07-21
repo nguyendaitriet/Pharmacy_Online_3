@@ -73,6 +73,9 @@ public class DrugDTO implements Validator {
             if (!isDrugNameIdValid) {
                 errors.rejectValue("drugName","400", ErrorMessage.VALID_DRUG_NAME);
             }
+            else if (drugName.length() > 100) {
+                errors.rejectValue("drugName","400", ErrorMessage.MAX_DRUG_NAME_LENGTH);
+            }
         }
 
         if (drugContent.equals("") || drugContent == null) {

@@ -20,7 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-
     @Query("SELECT NEW com.tr.pharmacy.online.model.dto.UserDTO (" +
                 "u.id, " +
                 "u.username) " +
@@ -37,7 +36,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 "u.createdAt, " +
                 "u.deleted " +
             ") " +
-            "FROM User u ")
+            "FROM User u " +
+            "WHERE u.role.id = 1")
     List<UserDTO> findAllUserDTO();
 
     Optional<User> findByIdAndDeletedFalse(Long id);
@@ -55,4 +55,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "SET u.deleted = FALSE " +
             "WHERE u.id = :id")
     void unblockUser(@Param("id") long id);
+
 }

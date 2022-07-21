@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <th:block th:fragment="topbar-left">
+
+
         <ul class="list-unstyled topnav-menu float-right mb-0">
+
             <li class="dropdown notification-list">
-                <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="true">
                     <img src="/assets/images/users/triet.jpg" alt="user-image" class="rounded-circle">
-                    <span class="pro-user-name ml-1">Nguyen Dai Triet</span>
+                    <span class="pro-user-name ml-1">
+                        Nguyen Dai Triet
+                        <i class="mdi mdi-chevron-down"></i>
+                    </span>
                 </a>
+                <div class="dropdown-menu dropdown-menu-right profile-dropdown show" style="position: absolute; transform: translate3d(-24px, 5px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="top-end">
+                    <div class="dropdown-header noti-title">
+                        <h6 class="text-overflow m-0">Welcome !</h6>
+                    </div>
+
+                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <i class="mdi mdi-account-outline"></i>
+                        <span>Profile</span>
+                    </a>
+
+                    <div class="dropdown-divider"></div>
+
+                    <a href="/logout" class="dropdown-item notify-item">
+                        <i class="mdi mdi-logout-variant"></i>
+                        <span>Logout</span>
+                    </a>
+
+                </div>
             </li>
         </ul>
     </th:block>

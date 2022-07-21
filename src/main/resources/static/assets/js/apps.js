@@ -5,9 +5,7 @@ class App {
     static BASE_URL_ROLE = this.DOMAIN + "/api/roles";
     static BASE_URL_DOSAGE_FORM = this.DOMAIN + "/api/dosageForms";
     static BASE_URL_AUTH = this.DOMAIN + "/api/auth";
-
     static BASE_URL_USER = this.DOMAIN + "/api/users";
-    static BASE_URL_PROVINCE = "https://vapi.vnappmob.com/api/province";
 
     static SUCCESS_CREATED = "Successful data generation!";
     static SUCCESS_UPDATED = "Update data successfully!";

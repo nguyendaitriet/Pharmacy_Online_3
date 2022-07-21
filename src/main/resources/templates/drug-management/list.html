@@ -188,7 +188,7 @@
 
     page.element.currentRow = $("#currentRow");
     page.element.btnShowCreateForm = $("#btnCreateForm");
-    page.element.tempCustomer = $("#tempDrug");
+    page.element.tempDrug = $("#tempDrug");
     page.element.tbDrugList = $(".tbDrugList tbody");
 
     page.dialogs.element.mdCreateDrug = $("#mdCreateDrug");
@@ -226,7 +226,7 @@
     let drug = new Drug();
     let dosageForm = new DosageForm();
 
-    let tempDrug = $.validator.format($.trim(page.element.tempCustomer.val().toString()));
+    let tempDrug = $.validator.format($.trim(page.element.tempDrug.val().toString()));
     let tempOption = $.validator.format($.trim(page.dialogs.element.tempOption.val().toString()));
 
     page.loadData.getAllDrugs = () => {
@@ -427,7 +427,6 @@
         .fail( (jQXHR) => {
             App.SweetAlert.showErrorAlert(jQXHR.responseText);
         });
-
     }
 
     page.dialogs.loadData.getAllDosageForms = () => {

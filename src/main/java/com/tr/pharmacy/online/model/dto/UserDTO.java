@@ -12,6 +12,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 @Getter
@@ -45,12 +48,30 @@ public class UserDTO {
 
     private String address;
 
+    private String roleName;
+
+    private boolean deleted;
+
     @Valid
     private RoleDTO role;
+
+    private String creationDate;
 
     public UserDTO(Long id, String username) {
         this.id = id;
         this.username = username;
+    }
+
+    public UserDTO(Long id, String username, String fullName, String phoneNumber, String address, String roleName, Date creationDate, boolean deleted) {
+        this.id = id;
+        this.username = username;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.roleName = roleName;
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a");
+        this.creationDate = dateFormat.format(creationDate);
+        this.deleted = deleted;
     }
 
     public User toUser() {

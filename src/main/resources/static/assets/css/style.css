@@ -17,9 +17,9 @@ input.error {
 }
 
 .show {
-    display: block !important;
+    display: block!important;
 }
 
 .hide {
-    display: none;
+    display: none!important;
 }

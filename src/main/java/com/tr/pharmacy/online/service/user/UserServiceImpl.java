@@ -29,6 +29,16 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<UserDTO> findAllUserDTO() {
+        return userRepository.findAllUserDTO();
+    }
+
+    @Override
+    public Optional<User> findByIdAndDeletedFalse(Long id) {
+        return userRepository.findByIdAndDeletedFalse(id);
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
@@ -37,6 +47,7 @@ public class UserServiceImpl implements IUserService {
     public User getById(Long id) {
         return userRepository.getById(id);
     }
+
 
     @Override
     public User getByUsername(String username) {
@@ -72,6 +83,16 @@ public class UserServiceImpl implements IUserService {
         }
         return UserPrinciple.build(userOptional.get());
 //        return (UserDetails) userOptional.get();
+    }
+
+    @Override
+    public void blockUser(Long id) {
+        userRepository.blockUser(id);
+    }
+
+    @Override
+    public void unblockUser(Long id) {
+        userRepository.unblockUser(id);
     }
 
 }

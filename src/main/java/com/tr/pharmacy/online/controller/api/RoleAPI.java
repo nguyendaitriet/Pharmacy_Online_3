@@ -18,7 +18,7 @@ public class RoleAPI {
     IRoleService roleService;
 
     @GetMapping
-    public ResponseEntity<?> getAllDosageForms () {
+    public ResponseEntity<?> getAllRoles () {
         Iterable<Role> roles = roleService.findAll();
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }

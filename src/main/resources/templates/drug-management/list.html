@@ -243,7 +243,7 @@
 
         })
         .fail(() => {
-            App.showErrorAlert("Drug list not found!");
+            App.SweetAlert.showErrorAlert("Drug list not found!");
         })
     };
 
@@ -256,7 +256,7 @@
             drug = data;
         })
         .fail(() => {
-            App.showErrorAlert("Drug not found!");
+            App.SweetAlert.showErrorAlert("Drug not found!");
         })
     }
 
@@ -287,7 +287,7 @@
     }
 
     page.commands.showRemoveDrugModal = (drugId) => {
-        App.showConfirmDialog(App.REMOVE_DRUG)
+        App.SweetAlert.showConfirmDialog(App.REMOVE_DRUG)
             .then((result) => {
                 if (result.isConfirmed) {
                     page.dialogs.commands.removeDrug(drugId);
@@ -350,7 +350,7 @@
         .done((data) => {
             drug = data;
             page.commands.addRow();
-            App.showSuccessAlert(App.SUCCESS_CREATED);
+            App.SweetAlert.showSuccessAlert(App.SUCCESS_CREATED);
             page.commands.hideCreateDrugModal();
         })
         .fail((jqXHR) => {
@@ -397,7 +397,7 @@
         })
         .done((data) => {
             page.commands.updateRow(data);
-            App.showSuccessAlert(App.SUCCESS_UPDATED);
+            App.SweetAlert.showSuccessAlert(App.SUCCESS_UPDATED);
             page.commands.hideUpdateDrugModal();
         })
         .fail((jqXHR) => {
@@ -421,11 +421,11 @@
             url: page.urls.removeDrug + "/" + id
         })
         .done(() => {
-            App.showSuccessAlert(App.SUCCESS_REMOVED);
+            App.SweetAlert.showSuccessAlert(App.SUCCESS_REMOVED);
             $("#tr_" + id).remove();
         })
         .fail( (jQXHR) => {
-            App.showErrorAlert(jQXHR.responseText);
+            App.SweetAlert.showErrorAlert(jQXHR.responseText);
         });
 
     }
@@ -444,7 +444,7 @@
             });
         })
         .fail(() => {
-            App.showErrorAlert("Dosage form list not found!");
+            App.SweetAlert.showErrorAlert("Dosage form list not found!");
         })
     }
 

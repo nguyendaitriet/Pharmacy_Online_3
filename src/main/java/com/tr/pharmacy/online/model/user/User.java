@@ -46,6 +46,7 @@ public class User extends BaseEntity {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a");
 
         return new UserDTO()
+                .setId(this.id)
                 .setFullName(this.fullName)
                 .setPhoneNumber(this.phoneNumber)
                 .setAddress(this.address)

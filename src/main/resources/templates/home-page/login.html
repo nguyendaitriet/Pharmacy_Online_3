@@ -115,11 +115,16 @@
 	}
 
 	page.element.formLogin = $("#frmLogin");
+	page.element.formLoginInputs = $("#frmLogin input");
 	page.element.userLog = $("#loginEmail");
 	page.element.passLog = $("#loginPassword");
+
+
 	page.element.tempOption = $("#tempOption");
+	page.element.arrowCheckbox = $("#reg-log");
 
 	page.element.formRegister = $("#frmRegister");
+	page.element.formRegisterInputs = $("#frmRegister input");
 	page.element.userReg = $("#usernameReg");
 	page.element.passReg = $("#passwordReg");
 	page.element.nameReg = $("#fullNameReg");
@@ -148,6 +153,16 @@
 		})
 	}
 
+	page.loadData.atLoginForm = () => {
+		page.element.formLogin.removeAttr("disabled");
+		page.element.formRegisterInputs.attr("disabled", "true");
+	}
+
+	page.loadData.atRegisterForm = () => {
+		page.element.formRegisterInputs.removeAttr("disabled");
+		page.element.formLoginInputs.attr("disabled", "true");
+	}
+
 	page.commands.login = () => {
 		let user = {
 			username: page.element.userLog.val(),
@@ -173,7 +188,6 @@
 			$.notify("The account or password is incorrect, please check the information again!", "error");
 		});
 	}
-
 
 	page.commands.register = () => {
 
@@ -218,6 +232,15 @@
 
 	page.initializeControlEvent = () => {
 
+
+		// page.element.arrowCheckbox.change(function () {
+		// 	if ($(this).checked) {
+		// 		page.loadData.atRegisterForm();
+		// 	} else {
+		// 		page.loadData.atLoginForm();
+		// 	}
+		// })
+
 		page.element.btnLogin.on("click", function() {
 			page.commands.login();
 		});
@@ -226,14 +249,13 @@
 			page.commands.register();
 		});
 
-
-
 	}
 
 	$(function () {
 		page.loadData.getAllRoles();
 		page.initializeControlEvent();
 	});
+
 
 </script>
 </body>

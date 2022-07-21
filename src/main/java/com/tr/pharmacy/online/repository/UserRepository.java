@@ -56,4 +56,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.id = :id")
     void unblockUser(@Param("id") long id);
 
+    boolean existsByUsernameAndIdIsNot(String username, Long id);
 }

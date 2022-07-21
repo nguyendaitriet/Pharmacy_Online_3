@@ -52,7 +52,7 @@ class App {
             iziToast.success({
                 title: 'OK',
                 position: 'topRight',
-                timeout: 2500,
+                timeout: 5000,
                 message: t
             });
         }

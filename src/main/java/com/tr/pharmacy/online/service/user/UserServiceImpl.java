@@ -95,4 +95,9 @@ public class UserServiceImpl implements IUserService {
         userRepository.unblockUser(id);
     }
 
+    public boolean existsByUsernameAndIdIsNot(String username, Long id) {
+        return userRepository.existsByUsernameAndIdIsNot(username, id);
+    }
+
+
 }

@@ -25,5 +25,7 @@ public interface IUserService extends IGeneralService<User>, UserDetailsService 
 
     void unblockUser(Long id);
 
+    boolean existsByUsernameAndIdIsNot(String username, Long id);
+
 
 }

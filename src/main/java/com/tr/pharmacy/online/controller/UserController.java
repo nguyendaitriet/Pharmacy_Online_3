@@ -1,5 +1,6 @@
 package com.tr.pharmacy.online.controller;
 
+import com.tr.pharmacy.online.model.dto.UserDTO;
 import com.tr.pharmacy.online.model.user.User;
 import com.tr.pharmacy.online.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,16 @@ public class UserController {
         return username;
     }
 
+    private UserDTO getPrincipal() {
+        UserDTO userDTO;
+        String username;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        username = ((UserDetails) principal).getUsername();
+        Optional<User> currentUser = userService.findByUsername(username);
+        userDTO = currentUser.get().toUserDTO();
+        return userDTO;
+    }
+
 
     @GetMapping
     public ModelAndView showUserList() {
@@ -46,6 +57,7 @@ public class UserController {
     public ModelAndView showUserDetail() {
         ModelAndView modelAndView = new ModelAndView("/user-management/detail");
         modelAndView.addObject("username", getPrincipalName());
+        modelAndView.addObject("user", getPrincipal());
         return modelAndView;
     }
 

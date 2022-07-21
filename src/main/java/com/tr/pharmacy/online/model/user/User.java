@@ -1,12 +1,15 @@
 package com.tr.pharmacy.online.model.user;
 
 import com.tr.pharmacy.online.model.BaseEntity;
+import com.tr.pharmacy.online.model.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @Getter
 @Setter
@@ -39,5 +42,15 @@ public class User extends BaseEntity {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    public UserDTO toUserDTO() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a");
 
+        return new UserDTO()
+                .setFullName(this.fullName)
+                .setPhoneNumber(this.phoneNumber)
+                .setAddress(this.address)
+                .setUsername(this.username)
+                .setRole(this.role.toRoleDTO())
+                .setCreationDate(dateFormat.format(this.getCreatedAt()));
+    }
 }

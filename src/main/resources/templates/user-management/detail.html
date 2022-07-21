@@ -42,7 +42,7 @@
                 <div class="row">
                     <div class="col-md-9">
                         <div class="page-title-box">
-                            <h2 class="text-secondary">Account</h2>
+                            <h2 class="text-secondary">Your Account</h2>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -72,32 +72,32 @@
                                             <tr>
                                                 <th scope="row">1</th>
                                                 <td class="font-weight-bold">Full Name</td>
-                                                <td>${user.getFullName()}</td>
+                                                <td th:text="*{fullName}"></td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">2</th>
                                                 <td class="font-weight-bold">Email Address</td>
-                                                <td>${user.getEmail()}</td>
+                                                <td th:text="*{username}"></td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">3</th>
                                                 <td class="font-weight-bold">Phone Number</td>
-                                                <td>${user.getPhoneNumber()}</td>
+                                                <td th:text="*{phoneNumber}"</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">4</th>
                                                 <td class="font-weight-bold">Address</td>
-                                                <td>${user.getAddress()}</td>
+                                                <td th:text="*{address}"></td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">5</th>
                                                 <td class="font-weight-bold">Role</td>
-                                                <td>${user.getRole()}</td>
+                                                <td th:text="*{role.code}"></td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">6</th>
                                                 <td class="font-weight-bold">Creation Date</td>
-                                                <td>${user.getCreationDate()}</td>
+                                                <td th:text="*{creationDate}"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -126,10 +126,10 @@
 </div>
 
 
-<script src="assets\js\vendor.min.js"></script>
+<script src="/assets/js/vendor.min.js"></script>
 
 <!-- App js -->
-<script src="assets\js\app.min.js"></script>
+<script src="/assets/js/app.min.js"></script>
 
 </body>
 

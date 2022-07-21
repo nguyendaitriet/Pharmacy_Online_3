@@ -1,5 +1,6 @@
 package com.tr.pharmacy.online.model.user;
 
+import com.tr.pharmacy.online.model.dto.RoleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,9 @@ public class Role {
     private String code;
     private String name;
 
+    public RoleDTO toRoleDTO() {
+        return new RoleDTO()
+                .setId(id)
+                .setCode(code);
+    }
 }

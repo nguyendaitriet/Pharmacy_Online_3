@@ -40,6 +40,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.role.id = 1")
     List<UserDTO> findAllUserDTO();
 
+    @Query("SELECT NEW com.tr.pharmacy.online.model.dto.UserDTO (" +
+                "u.id, " +
+                "u.username," +
+                "u.fullName," +
+                "u.phoneNumber," +
+                "u.address," +
+                "u.role.code," +
+                "u.createdAt, " +
+                "u.deleted " +
+            ") " +
+            "FROM User u " +
+            "WHERE u.role.id = 2 AND u.id <> ?1")
+    List<UserDTO> findAllAdminDTO(Long id);
+
     Optional<User> findByIdAndDeletedFalse(Long id);
 
     @Modifying

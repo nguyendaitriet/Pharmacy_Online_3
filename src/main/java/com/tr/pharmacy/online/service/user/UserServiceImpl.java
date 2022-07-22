@@ -34,6 +34,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<UserDTO> findAllAdminDTO(Long id) {
+        return userRepository.findAllAdminDTO(id);
+    }
+
+    @Override
     public Optional<User> findByIdAndDeletedFalse(Long id) {
         return userRepository.findByIdAndDeletedFalse(id);
     }

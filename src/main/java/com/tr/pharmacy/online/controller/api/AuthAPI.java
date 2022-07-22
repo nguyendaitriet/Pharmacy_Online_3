@@ -106,6 +106,8 @@ public class AuthAPI {
 //                .domain("bank-transaction.azurewebsites.net")
                 .build();
 
+
+
         System.out.println(jwtResponse);
 
         return ResponseEntity

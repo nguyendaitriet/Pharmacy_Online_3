@@ -27,7 +27,7 @@
             <td class="text-center id">{0}</td>
             <td>{1}</td>
             <td class="text-center">{2}</td>
-            <td class="text-center">{3}</td>
+            <td>{3}</td>
             <td class="text-end">{4}</td>
             <td class="text-center">{5}</td>
             <td class="text-center">{6}</td>
@@ -39,6 +39,20 @@
                     <i class="fas fa-lock-open"></i>
                 </button>
             </td>
+        </tr>
+    </textarea>
+</th:block>
+
+<th:block th:fragment="temp_list_table_admin">
+    <textarea id="tempAdmin" style="display:none">
+        <tr id="tr_{0}">
+            <td class="text-center id">{0}</td>
+            <td>{1}</td>
+            <td class="text-center">{2}</td>
+            <td>{3}</td>
+            <td class="text-end">{4}</td>
+            <td class="text-center">{5}</td>
+            <td class="text-center">{6}</td>
         </tr>
     </textarea>
 </th:block>

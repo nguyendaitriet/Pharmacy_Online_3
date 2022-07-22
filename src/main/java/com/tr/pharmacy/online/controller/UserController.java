@@ -22,6 +22,7 @@ public class UserController {
     IUserService userService;
 
     private String getPrincipalName() {
+
         String username;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -50,6 +51,13 @@ public class UserController {
     @GetMapping
     public ModelAndView showUserList() {
         ModelAndView modelAndView = new ModelAndView("/user-management/list");
+        modelAndView.addObject("username", getPrincipalName());
+        return modelAndView;
+    }
+
+    @GetMapping("/admins")
+    public ModelAndView showAdminList() {
+        ModelAndView modelAndView = new ModelAndView("/admin-management/list");
         modelAndView.addObject("username", getPrincipalName());
         return modelAndView;
     }

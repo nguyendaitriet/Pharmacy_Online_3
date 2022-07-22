@@ -7,6 +7,8 @@ import com.tr.pharmacy.online.utils.ParsingValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +25,26 @@ public class UserAPI {
     public ResponseEntity<?> getAllUsers() {
         try {
             List<UserDTO> userDTOList = userService.findAllUserDTO();
+
+            if (userDTOList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(userDTOList, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<?> getAllAdmins() {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = ((UserDetails) principal).getUsername();
+            Optional<User> currentUser = userService.findByUsername(username);
+
+            List<UserDTO> userDTOList = userService.findAllAdminDTO(currentUser.get().getId());
 
             if (userDTOList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

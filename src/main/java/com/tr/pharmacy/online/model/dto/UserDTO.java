@@ -33,8 +33,8 @@ public class UserDTO {
 
     @NotBlank(message = "Password is required.")
     @Size(min = 6, message = "Minimum password length is 6 characters.")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{6,}$",
-            message = "Password: Minimum six characters, at least one letter, one number and one special character:")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{5,}$",
+            message = "Password: Minimum five characters, at least one letter, one number and one special character.")
     private String password;
 
     @NotBlank(message = "Full name is required.")

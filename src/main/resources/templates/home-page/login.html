@@ -179,7 +179,6 @@
 			data: JSON.stringify(user)
 		})
 		.done((resp) => {
-			console.log(resp);
 			$.notify("Logged in successfully!", "success");
 
 			for (let role of resp.roles) {

@@ -107,7 +107,6 @@ public class AuthAPI {
                 .build();
 
 
-
         System.out.println(jwtResponse);
 
         return ResponseEntity
